@@ -1,0 +1,11 @@
+{
+    "name": "threejs-workshop",
+    "version": "1.0.0",
+    "description": "Starter project for Three.js workshop",
+    "scripts": {
+        "start": "npx http-server public"
+    },
+    "dependencies": {
+        "three": "^0.154.0"
+    }
+}
