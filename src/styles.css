@@ -1,0 +1,40 @@
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+/* Position File Input in Bottom-Right Corner */
+#fileInput {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    border: none;
+}
+
+/* Hide Default File Input */
+#fileInput::-webkit-file-upload-button {
+    visibility: hidden;
+}
+
+#fileInput::before {
+    content: "Upload Model";
+    display: inline-block;
+    background: #3498db;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#fileInput:hover::before {
+    background: #2980b9;
+}
+

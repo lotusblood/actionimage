@@ -3,9 +3,14 @@
     "version": "1.0.0",
     "description": "Starter project for Three.js workshop",
     "scripts": {
-        "start": "npx http-server public"
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview"
     },
     "dependencies": {
         "three": "^0.154.0"
+    },
+    "devDependencies": {
+        "vite": "^6.0.11"
     }
 }
