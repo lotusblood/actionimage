@@ -15,6 +15,27 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+// Track mouse movement
+export let mousePosition = new THREE.Vector2(); // Global variable
+const raycaster = new THREE.Raycaster();
+
+document.addEventListener("mousemove", (event) => {
+    // Normalize coordinates to (-1, 1) range
+    mousePosition.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mousePosition.y = -(event.clientY / window.innerHeight) * 2 + 1;
+});
+
+// Function to get 3D mouse position (call this from experiments)
+export function getMouse3DPosition(camera, scene) {
+    raycaster.setFromCamera(mousePosition, camera);
+    const intersects = raycaster.intersectObjects(scene.children, true);
+    
+    if (intersects.length > 0) {
+        return intersects[0].point;
+    }
+    return null;
+}
+
 // Add OrbitControls for Pan, Zoom, and Orbit
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
@@ -23,6 +44,23 @@ controls.screenSpacePanning = false;
 controls.minDistance = 1;
 controls.maxDistance = 50;
 controls.maxPolarAngle = Math.PI / 2; // Restrict vertical movement
+
+
+/*
+// Function to Load and Apply an Experiment
+async function loadExperiment(experimentName) {
+    console.log(`Loading Experiment: ${experimentName}`);
+    try {
+        const module = await import(`./modules/${experimentName}.js`);
+        module.init(scene, camera, renderer);
+    } catch (error) {
+        console.error(`Error loading ${experimentName}:`, error);
+    }
+}
+
+// Dynamically Load an Experiment (Change this name to test different ones)
+loadExperiment("experiment1");
+*/
 
 // Lighting
 const light = new THREE.DirectionalLight(0xffffff, 1);
@@ -62,6 +100,18 @@ function addModelToScene(model) {
     model.position.set(0, 0, 0);
     scene.add(model);
     console.log("Model added:", model);
+
+        // Extract vertex data
+        model.traverse((child) => {
+            if (child.isMesh) {
+                const geometry = child.geometry;
+                if (geometry.isBufferGeometry) {
+                    const positions = geometry.attributes.position.array;
+                    console.log("Vertex Positions:", positions); // Log raw vertex data
+                    displayVertexData(positions); // Display in UI
+                }
+            }
+        });
 
     // Center the model in the scene
     const bbox = new THREE.Box3().setFromObject(model);
@@ -131,6 +181,21 @@ Promise.all([
     }
     animate();
 });
+
+
+// convert and format vertex data for display
+function displayVertexData(vertexArray) {
+    const vertexDisplay = document.getElementById("vertexDataDisplay");
+    if (!vertexDisplay) return;
+
+    let textOutput = "Vertex Positions:\n";
+    for (let i = 0; i < vertexArray.length; i += 3) {
+        textOutput += `X: ${vertexArray[i].toFixed(3)}, Y: ${vertexArray[i + 1].toFixed(3)}, Z: ${vertexArray[i + 2].toFixed(3)}\n`;
+        if (i > 300) break; // Limit output to avoid freezing the page
+    }
+
+    vertexDisplay.textContent = textOutput; // Update UI
+}
 
 // Main Animation Loop
 function animateScene() {
